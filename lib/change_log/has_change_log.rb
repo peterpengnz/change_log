@@ -41,41 +41,45 @@ module ChangeLog
     # Wrap the following methods in a module so we can include them only in the
     # ActiveRecord models that declare `enable_change_log`.
     module InstanceMethods
+
       def record_create
         # do nothing if the change log is not turned on
         return '' unless switched_on?
+        changes = []
         # saving changes to change log
         self.attributes.map do |key,value|
           unless self.ignore.include?(key.to_sym)
-            option = {:action=>'INSERT', :record_id=>self.id,:table_name=>self.class.table_name, :user=>ChangeLog.whodidit,:attribute_name=>key,:new_value=>value,:version=>1}
-            ChangeLogs.update_change_log_record_with(option)
+            changes << {:action=>'INSERT', :record_id=>self.id,:table_name=>self.class.table_name, :user=>ChangeLog.whodidit,:attribute_name=>key,:new_value=>value,:version=>1}
           end
         end  
+        ChangeLogs.update_change_log_record_with(changes)
   	  end
 
       def record_update
         # do nothing if the change log is not turned on and no changes has been made
         return '' unless switched_on? && self.valid? && self.changed?
-
+        changes = []
+        # saving changes to change log
         self.changes.each do |attribute_name,value|
           # do not record changes between nil <=> ''
           # and ignore the changes for ignored columns
           unless value[1].eql?(value[0]) || (value[1].blank?&&value[0].blank?) || self.ignore.include?(attribute_name.to_s)
-            option = {:action=>'UPDATE',:record_id=>self.id,:table_name=>self.class.table_name,:user=>ChangeLog.whodidit,:attribute_name=>attribute_name,:old_value=>value[0],:new_value=>value[1],:version => ChangeLogs.get_version_number(self.id,self.class.table_name)}
-            ChangeLogs.update_change_log_record_with(option)
+            changes << {:action=>'UPDATE',:record_id=>self.id,:table_name=>self.class.table_name,:user=>ChangeLog.whodidit,:attribute_name=>attribute_name,:old_value=>value[0],:new_value=>value[1],:version => ChangeLogs.get_version_number(self.id,self.class.table_name)}
           end
-        end
+        end  
+        ChangeLogs.update_change_log_record_with(changes)
       end
 
       def record_destroy
         return '' unless switched_on?
-        ChangeLogs.update_change_log_record_with({:action=>'DELETE',:table_name=>self.class.table_name,:record_id=>self.id,:user=>ChangeLog.whodidit,:version => ChangeLogs.get_version_number(self.id,self.class.table_name)})
+        changes = [{:action=>'DELETE',:table_name=>self.class.table_name,:record_id=>self.id,:user=>ChangeLog.whodidit,:version => ChangeLogs.get_version_number(self.id,self.class.table_name)}]
+        ChangeLogs.update_change_log_record_with(changes)
       end
 
       # Return a list of change_log records
       # Return empty array if not record found
       def change_logs
-        return ChangeLogs.find(:all,:conditions=>['table_name= ? and record_id = ?',self.class.table_name,self.id],:order=>"created_at DESC")
+        return ChangeLogs.where(['table_name= ? and record_id = ?',self.class.table_name,self.id]).order("created_at DESC")
       end
 
       # Return `true` if current record has a list of change_log records
