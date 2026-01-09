@@ -5,16 +5,8 @@ It automatically saves who made the changes at what time and what has been chang
 You can choose to skip the column which you do not want to keep change logs.
 For example: 'updated_at', 'created_at' and 'password' etc.
 
-* Note: 
-        Use Change Log version 1.0.5 if your application is using Rails 2.x.
-
 h2. Install Change Log Gem
 
-1. by command:
-<pre><code># gem install change_log</code></pre>
-
-
-2. or by bundler:
 <pre><code># Gemfile in your application
 gem 'change_log'
 </code></pre>
@@ -22,9 +14,9 @@ gem 'change_log'
 Then:
 <pre><code>bundle install</code></pre>
 
-3. Create a table to keep all changes
+Next we need to create a table to keep all changes
 
-    Generate a migration file similar to this:
+  Generate a migration file similar to this:
 
 <pre><code>
     class AddChangeLog < ActiveRecord::Migration
@@ -152,7 +144,5 @@ h2. Wish List
 h3. Author
 ----
 
-Peter Zhang at NCS Software Ltd New Zealand.
-Email: peterz@ncs.co.nz
-
-Copyright (c) 2013 Peter Zhang and NCS Software LTD, released under the MIT license
+Peter Zhang
+Copyright (c) 2026 Peter Zhang, released under the MIT license
