@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module ChangeLog
   module Controller
 
@@ -26,4 +27,4 @@ module ChangeLog
   end
 end
 
-ActionController::Base.send :include, ChangeLog::Controller
+ActionController::Base.include ChangeLog::Controller

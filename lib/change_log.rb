@@ -31,7 +31,7 @@ module ChangeLog
   end
   
   
-  private
+  private_class_method :change_log_store, :config
   # Thread-safe hash to hold ChangeLog's data.
   def self.change_log_store
     Thread.current[:change_log] ||= {}

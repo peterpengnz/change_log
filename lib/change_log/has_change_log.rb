@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ChangeLog
   module Model
 
@@ -5,23 +7,19 @@ module ChangeLog
       base.send :extend, ClassMethods
     end
 
-
     module ClassMethods
       # Declare this in your model to keep a change log for every create, update, and destroy.
-      #
-      # Options:
+      # Option:
       # :ignore    an array of attributes will be ingored when saving changes into change log.
       def enable_change_log(options = {})
         send :include, InstanceMethods
 
         cattr_accessor :ignore, :whodidit
         self.ignore = (options[:ignore] || []).map &:to_s
-
         # Indicates whether or not ChangeLog is active for this class.
         # This is independent of whether ChangeLog is globally enabled or disabled.
         cattr_accessor :change_log_active
         self.change_log_active = true
-
         after_create  :record_create
         before_update :record_update
         after_destroy :record_destroy
@@ -45,11 +43,20 @@ module ChangeLog
       def record_create
         # do nothing if the change log is not turned on
         return '' unless switched_on?
+
         changes = []
         # saving changes to change log
         self.attributes.map do |key,value|
           unless self.ignore.include?(key.to_sym)
-            changes << {:action=>'INSERT', :record_id=>self.id,:table_name=>self.class.table_name, :user=>ChangeLog.whodidit,:attribute_name=>key,:new_value=>value,:version=>1}
+            changes << { 
+                          action: 'INSERT',
+                          record_id: self.id,
+                          table_name: self.class.table_name,
+                          user: ChangeLog.whodidit,
+                          attribute_name: key,
+                          new_value: value,
+                          version: 1
+                        }
           end
         end  
         ChangeLogs.update_change_log_record_with(changes)
@@ -58,13 +65,23 @@ module ChangeLog
       def record_update
         # do nothing if the change log is not turned on and no changes has been made
         return '' unless switched_on? && self.valid? && self.changed?
+
         changes = []
         # saving changes to change log
         self.changes.each do |attribute_name,value|
           # do not record changes between nil <=> ''
           # and ignore the changes for ignored columns
           unless value[1].eql?(value[0]) || (value[1].blank?&&value[0].blank?) || self.ignore.include?(attribute_name.to_s)
-            changes << {:action=>'UPDATE',:record_id=>self.id,:table_name=>self.class.table_name,:user=>ChangeLog.whodidit,:attribute_name=>attribute_name,:old_value=>value[0],:new_value=>value[1],:version => ChangeLogs.get_version_number(self.id,self.class.table_name)}
+            changes << {
+                          action: 'UPDATE',
+                          record_id: self.id,
+                          table_name: self.class.table_name,
+                          user: ChangeLog.whodidit,
+                          attribute_name: attribute_name,
+                          old_value: value[0],
+                          new_value: value[1], 
+                          version: ChangeLogs.get_version_number(self.id,self.class.table_name)
+                        }
           end
         end  
         ChangeLogs.update_change_log_record_with(changes)
@@ -72,7 +89,13 @@ module ChangeLog
 
       def record_destroy
         return '' unless switched_on?
-        changes = [{:action=>'DELETE',:table_name=>self.class.table_name,:record_id=>self.id,:user=>ChangeLog.whodidit,:version => ChangeLogs.get_version_number(self.id,self.class.table_name)}]
+        changes = [{
+                    action: 'DELETE',
+                    table_name: self.class.table_name,
+                    record_id: self.id,
+                    user: ChangeLog.whodidit,
+                    version: ChangeLogs.get_version_number(self.id,self.class.table_name)
+                  }]
         ChangeLogs.update_change_log_record_with(changes)
       end
 
@@ -85,7 +108,7 @@ module ChangeLog
       # Return `true` if current record has a list of change_log records
       # otherwise `false`.
       def has_change_log?
-        return (ChangeLogs.count(:conditions=>['table_name= ? and record_id = ?',self.class.table_name,self.id]) > 0) ? true : false
+        return ChangeLogs.exists?(table_name:self.class.table_name, record_id:self.id)
       end
 
       private
