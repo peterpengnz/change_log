@@ -19,7 +19,7 @@ Next we need to create a table to keep all changes
 Generate a migration:
 
 ```
-rails generate change_log:change_log ChangeLog
+rails generate change_log ChangeLog
 ```
 
 Then:
@@ -59,7 +59,7 @@ For Example:
 # this is a model file
 def making_some_changes
   user = User.first
-  user.email = 'peterz@ncs.co.nz'
+  user.email = 'peter@example.com'
   user.save
 end
 ```

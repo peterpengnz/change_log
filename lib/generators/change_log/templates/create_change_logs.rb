@@ -1,4 +1,4 @@
-class CreateChangeLogs < ActiveRecord::Migration
+class CreateChangeLogs < ActiveRecord::Migration[8.1]
   def change
     create_table :change_logs do |t|
       t.integer :version, null: false      # store version of each change
@@ -10,6 +10,7 @@ class CreateChangeLogs < ActiveRecord::Migration
       t.text :old_value                    # the value before change
       t.text :new_value                    # value after change
       t.string :field_type, limit: 30      # the column type eg. date, text, varchar, int etc
+
       t.timestamps
     end
   end
