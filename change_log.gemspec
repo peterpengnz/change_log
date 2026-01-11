@@ -46,5 +46,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "generator_spec"
   
   spec.add_dependency "activerecord-import"
-  spec.add_dependency "pry"
 end

@@ -3,7 +3,6 @@ PATH
   specs:
     change_log (1.0.0)
       activerecord-import
-      pry
 
 GEM
   remote: https://rubygems.org/
@@ -48,7 +47,6 @@ GEM
     base64 (0.3.0)
     bigdecimal (4.0.1)
     builder (3.3.0)
-    coderay (1.1.3)
     concurrent-ruby (1.3.6)
     connection_pool (3.0.2)
     crass (1.0.6)
@@ -72,7 +70,6 @@ GEM
     loofah (2.25.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
-    method_source (1.1.0)
     minitest (6.0.1)
       prism (~> 1.5)
     nokogiri (1.19.0-aarch64-linux-gnu)
@@ -81,9 +78,6 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.7.0)
-    pry (0.15.2)
-      coderay (~> 1.1)
-      method_source (~> 1.0)
     psych (5.3.1)
       date
       stringio
