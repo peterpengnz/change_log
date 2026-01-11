@@ -27,4 +27,4 @@ module ChangeLog
   end
 end
 
-ActionController::Base.include ChangeLog::Controller
+# ActionController::Base.include ChangeLog::Controller

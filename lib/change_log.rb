@@ -30,8 +30,7 @@ module ChangeLog
     change_log_store[:whodidit] = value
   end
   
-  
-  private_class_method :change_log_store, :config
+  private
   # Thread-safe hash to hold ChangeLog's data.
   def self.change_log_store
     Thread.current[:change_log] ||= {}

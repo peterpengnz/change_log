@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "change_log/railtie" if defined?(Rails)
+
 module ChangeLog
   module Model
 
@@ -122,5 +124,3 @@ module ChangeLog
 
   end
 end
-
-ActiveRecord::Base.send :include, ChangeLog::Model

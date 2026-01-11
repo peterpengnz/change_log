@@ -8,7 +8,6 @@ ActiveRecord::Schema.define do
 
 
   create_table "change_logs"  do |t|
-    t.column "id", :integer, :null => false
     t.column "version",   :integer, :null => false
     t.column "record_id",   :integer
     t.column "table_name", :string
